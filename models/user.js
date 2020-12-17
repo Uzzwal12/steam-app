@@ -1,40 +1,39 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const User = mongoose.model(
-  "User",
-  new mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-      minlength: 3,
-      maxlength: 50,
-    },
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 50,
+  },
 
-    username: {
-      type: String,
-      unique: true,
-      required: true,
-    },
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+  },
 
-    email: {
-      type: String,
-      unique: true,
-      required: true,
-    },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+  },
 
-    password: {
-      type: String,
-      required: true,
-      min: 5,
-    },
+  password: {
+    type: String,
+    required: true,
+    min: 5,
+  },
 
-    steamId: {
-      type: String,
-      required: true,
-    },
-  })
-);
+  steamId: {
+    type: String,
+    required: true,
+  },
+});
+
+const User = mongoose.model("User", userSchema);
 
 function validateUser(user) {
   const schema = {

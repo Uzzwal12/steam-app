@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const express = require("express");
-const user = require("./routes/users");
+const user = require("./routes/user");
 const auth = require("./routes/auth");
+const inventory = require("./routes/inventory");
 require("dotenv").config();
 
 const app = express();
@@ -18,6 +19,7 @@ mongoose
 app.use(express.json());
 app.use("/api/signUp", user);
 app.use("/api/login", auth);
+app.use("/api/syncInventory", inventory);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
