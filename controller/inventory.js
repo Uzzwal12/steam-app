@@ -1,43 +1,44 @@
-const request = require("request");
 const { User } = require("../models/user");
-
 const { Inventory } = require("../models/inventory");
+const { response } = require("express");
+axios = require("axios");
 
-const syncInventory = async (req, res) => {
+const syncInventory = async (queryValues) => {
   try {
     let findQuery = {
-      username: req.query.id,
+      username: queryValues,
     };
 
     let projectionQuery = {
       username: 1,
       steamId: 1,
-      id: 0,
+      _id: 0,
     };
 
     User.findOne(findQuery, projectionQuery)
       .lean()
       .exec(async function (err, result) {
-        if (err) return res.status(400).send("Error in finding function", err);
+        if (err) console.log("Error in finding function", err);
         else {
           let url =
             "https://steamcommunity.com/profiles/" +
             result.steamId +
             "/inventory/json/730/2";
-          const response = await request({ url, json: true });
+          const response = await axios.get(url);
+
           console.log("Checking status", response.status);
-          if (status == "200") {
+          if (response.status == "200") {
             const inventoryData = response.data;
             let idsArray = await getClassIds(inventoryData.rgInventory);
             let finalObject = inventoryData.rgDescriptions;
-            let invItems = getInvItems(idsArray, finalObject);
+            let invItems = await getInvItems(idsArray, finalObject);
 
             let findUser = {
-              username: req.query.id,
+              username: queryValues,
             };
 
             let inventory = {
-              username: req.query.id,
+              username: queryValues,
               steamId: result.steamId,
               items: invItems,
             };
@@ -49,10 +50,10 @@ const syncInventory = async (req, res) => {
             };
             Inventory.findOneAndUpdate(findUser, inventory, options).exec(
               function (err, result) {
-                if (err)
-                  return res.status(400).send("Error in saving function");
+                if (err) console.log("Error in saving function");
                 else {
-                  res.send("Inventory synced successfully");
+                  console.log("Inventory synced successfully");
+                  return result;
                 }
               }
             );
@@ -98,9 +99,7 @@ function getInvItems(idsArray, finalObject) {
         for (let i = 0; i < idsArray.length; i++) {
           if (idsArray[i].id == value.classId) {
             let tempObj = {
-              name: value.name,
-              hashName: value.market_hash_name,
-              count: idsArray[i].count,
+              Name: value.market_hash_name,
             };
             invArray.push(tempObj);
           }
