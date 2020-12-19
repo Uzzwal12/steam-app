@@ -19,7 +19,7 @@ mongoose
 app.use(express.json());
 app.use("/api/signUp", user);
 app.use("/api/login", auth);
-app.use("/api/syncInventory", inventory);
+app.use("/api/getInventory", inventory);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
