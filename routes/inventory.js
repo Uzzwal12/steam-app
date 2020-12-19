@@ -4,9 +4,15 @@ const { syncInventory } = require("../controller/inventory");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  let queryValues = req.query.id;
-  let data = await syncInventory(queryValues);
-  res.send(data);
+	let queryValues = req.query.id;
+	syncInventory(queryValues,function(err,result){
+		if(err){
+			console.log("error--->",err);
+		} else{
+			console.log("Data--->",result);
+			res.json(result);
+		}
+	});
 });
 
 module.exports = router;
